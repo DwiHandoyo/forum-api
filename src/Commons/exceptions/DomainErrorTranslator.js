@@ -17,6 +17,14 @@ DomainErrorTranslator._directories = {
   'REFRESH_AUTHENTICATION_USE_CASE.PAYLOAD_NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('refresh token harus string'),
   'DELETE_AUTHENTICATION_USE_CASE.NOT_CONTAIN_REFRESH_TOKEN': new InvariantError('harus mengirimkan token refresh'),
   'DELETE_AUTHENTICATION_USE_CASE.PAYLOAD_NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('refresh token harus string'),
+  'ADD_THREAD.NOT_CONTAIN_BODY':  new InvariantError('harus mengirimkan body'),
+  'ADD_THREAD.NOT_CONTAIN_TITLE':  new InvariantError('harus mengirimkan title'),
+  'ADD_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('title dan body harus string'),
+  'ADD_THREAD.TITLE_LIMIT_CHAR': new InvariantError('tidak dapat membuat thread baru karena karakter title melebihi batas limit'),
+  'ADD_COMMENT.NOT_CONTAIN_CONTENT':  new InvariantError('harus mengirimkan content'),
+  'ADD_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('content harus string'),
+  'ADD_COMMENT.CONTENT_LIMIT_CHAR': new InvariantError('tidak dapat membuat comment baru karena karakter body melebihi batas limit'),
+  
 };
 
 module.exports = DomainErrorTranslator;

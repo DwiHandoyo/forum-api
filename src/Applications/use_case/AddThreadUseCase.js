@@ -10,7 +10,7 @@ class AddThreadUseCase {
     const accessToken = await this._authenticationTokenManager.extractToken(useCasePayload.auth);
     await this._authenticationTokenManager.verifyAccessToken(accessToken);
 
-    const addThread = new  AddThread(useCasePayload);
+    const addThread = new AddThread(useCasePayload);
     return this._threadRepository.addThread(addThread);
   }
 }

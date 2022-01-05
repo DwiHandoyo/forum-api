@@ -162,7 +162,7 @@ describe('comment endpoint', () => {
       await CommentsTableTestHelper.addComment({ id: commentId1, owner: userId1 });
 
       /* create second user */
-      const { accessToken: accessToken2,  userId: userId2} = await ServerTestHelper
+      const { accessToken: accessToken2, userId: userId2 } = await ServerTestHelper
         .getAccessToken(server, 'dicoding2');
 
       // action
@@ -182,41 +182,41 @@ describe('comment endpoint', () => {
     });
 
     it('should respond with 200 with thread details and comments after comment deletion', async () => {
-        const server = await createServer(container);
-  
-        const threadId = 'thread-xyz';
-        const commentId = 'comment-xyz';
-        const ownerComment = 'dicoding'
-        const { accessToken, userId } = await ServerTestHelper
-            .getAccessToken(server, ownerComment);
-        await UsersTableTestHelper.addUser({ id: 'user-xyz', username: 'JohnDoe' });
-        await ThreadTableTestHelper.addThread({ id: threadId, owner: 'user-xyz' });
-        await CommentsTableTestHelper.addComment({
-          id: commentId, threadId, owner: userId, date: '31-12-2020',
-        });
-        await CommentsTableTestHelper.addComment({ id: 'comment-abc', threadId, owner: 'user-xyz' });
+      const server = await createServer(container);
 
-        // action
-        const responseDelete = await server.inject({
-            method: 'DELETE',
-            url: `/threads/${threadId}/comments/${commentId}`,
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          });
+      const threadId = 'thread-xyz';
+      const commentId = 'comment-xyz';
+      const ownerComment = 'dicoding';
+      const { accessToken, userId } = await ServerTestHelper
+        .getAccessToken(server, ownerComment);
+      await UsersTableTestHelper.addUser({ id: 'user-xyz', username: 'JohnDoe' });
+      await ThreadTableTestHelper.addThread({ id: threadId, owner: 'user-xyz' });
+      await CommentsTableTestHelper.addComment({
+        id: commentId, threadId, owner: userId, date: '31-12-2020',
+      });
+      await CommentsTableTestHelper.addComment({ id: 'comment-abc', threadId, owner: 'user-xyz' });
 
-        const responseThread = await server.inject({
-          method: 'GET',
-          url: `/threads/${threadId}`,
-        });
-  
-        const responseJson = JSON.parse(responseThread.payload);
-        expect(responseThread.statusCode).toEqual(200);
-        expect(responseJson.status).toEqual('success');
-        expect(responseJson.data).toBeDefined();
-        expect(responseJson.data.thread).toBeDefined();
-        expect(responseJson.data.thread.comments).toHaveLength(2);
-        expect(responseJson.data.thread.comments[0].content).toEqual('**komentar telah dihapus**');
+      // action
+      const responseDelete = await server.inject({
+        method: 'DELETE',
+        url: `/threads/${threadId}/comments/${commentId}`,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const responseThread = await server.inject({
+        method: 'GET',
+        url: `/threads/${threadId}`,
+      });
+
+      const responseJson = JSON.parse(responseThread.payload);
+      expect(responseThread.statusCode).toEqual(200);
+      expect(responseJson.status).toEqual('success');
+      expect(responseJson.data).toBeDefined();
+      expect(responseJson.data.thread).toBeDefined();
+      expect(responseJson.data.thread.comments).toHaveLength(2);
+      expect(responseJson.data.thread.comments[0].content).toEqual('**komentar telah dihapus**');
     });
   });
 });

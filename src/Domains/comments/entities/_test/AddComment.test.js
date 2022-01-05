@@ -36,7 +36,6 @@ describe('a AddComment entities', () => {
     expect(() => new AddComment(payload)).toThrowError('ADD_COMMENT.CONTENT_LIMIT_CHAR');
   });
 
-
   it('should create addComment object correctly', () => {
     // Arrange
     const payload = {

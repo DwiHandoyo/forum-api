@@ -47,7 +47,6 @@ describe('a AddThread entities', () => {
     expect(() => new AddThread(payload)).toThrowError('ADD_THREAD.TITLE_LIMIT_CHAR');
   });
 
-
   it('should create addThread object correctly', () => {
     // Arrange
     const payload = {

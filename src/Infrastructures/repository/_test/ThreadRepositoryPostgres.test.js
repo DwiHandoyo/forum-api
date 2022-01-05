@@ -1,8 +1,5 @@
 const ThreadTableTestHelper = require('../../../../tests/ThreadTableTestHelper');
 const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
-// const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelper');
-// const RepliesTableTestHelper = require('../../../../tests/RepliesTableTestHelper');
-const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
 const AddThread = require('../../../Domains/threads/entities/AddThread');
 const AddedThread = require('../../../Domains/threads/entities/AddedThread');
 const pool = require('../../database/postgres/pool');
@@ -10,7 +7,6 @@ const ThreadRepositoryPostgres = require('../ThreadRepositoryPostgres');
 const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
 
 describe('ThreadRepositoryPostgres', () => {
-  
   afterEach(async () => {
     await ThreadTableTestHelper.cleanTable();
     await UsersTableTestHelper.cleanTable();
@@ -34,8 +30,8 @@ describe('ThreadRepositoryPostgres', () => {
 
       /* arranging for mocks and stubs for thread repository */
       const fakeIdGenerator = () => 'thread-xyz';
-      const fakeDateGenerator =  {
-        toISOString : () => '31-12-2021',
+      const fakeDateGenerator = {
+        toISOString: () => '31-12-2021',
       };
 
       /* arranging for thread repository */
@@ -45,9 +41,7 @@ describe('ThreadRepositoryPostgres', () => {
         owner: 'user-xyz',
       });
 
-      const threadRepositoryPostgres = new ThreadRepositoryPostgres(
-        pool, fakeIdGenerator, fakeDateGenerator,
-      );
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, fakeIdGenerator, fakeDateGenerator);
 
       // action
       const addedThread = await threadRepositoryPostgres.addThread(addThread);
@@ -78,7 +72,6 @@ describe('ThreadRepositoryPostgres', () => {
       };
       /* arranging for thread repository */
 
-      
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {}, {});
       await UsersTableTestHelper.addUser({ id: 'user-xyz', username: expectedThread.username });
       await ThreadTableTestHelper.addThread(addThread);

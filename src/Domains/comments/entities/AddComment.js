@@ -1,14 +1,13 @@
 class AddComment {
   constructor(payload) {
     this._verifyPayload(payload);
-    const {content, owner, threadId} = payload;
+    const { content, owner, threadId } = payload;
     this.content = content;
     this.owner = owner;
     this.threadId = threadId;
   }
 
   _verifyPayload({ content }) {
-
     if (!content) {
       throw new Error('ADD_COMMENT.NOT_CONTAIN_CONTENT');
     }

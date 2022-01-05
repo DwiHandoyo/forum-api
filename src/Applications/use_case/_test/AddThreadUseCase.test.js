@@ -14,7 +14,7 @@ describe('AddThreadUseCase', () => {
       owner: 'user-abhbabg',
       body: 'dicoding emang mantap',
       title: 'dicoding',
-      auth: 'Bearer xyz'
+      auth: 'Bearer xyz',
     };
     const accessToken = 'xyz';
     const expectedAddedThread = new AddedThread({

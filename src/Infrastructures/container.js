@@ -7,6 +7,7 @@ const { nanoid } = require('nanoid');
 const bcrypt = require('bcrypt');
 const Jwt = require('@hapi/jwt');
 const pool = require('./database/postgres/pool');
+
 const date = new Date();
 const commentsMapDb = require('./utils/comments');
 

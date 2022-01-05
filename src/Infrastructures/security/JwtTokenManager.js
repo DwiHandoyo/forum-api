@@ -35,7 +35,7 @@ class JwtTokenManager extends AuthenticationTokenManager {
   }
 
   async extractToken(auth) {
-    if(auth === ''){
+    if (auth === '') {
       throw new AuthenticationError('Missing authentication');
     }
     const token = auth.replace(/^Bearer\s+/, '');

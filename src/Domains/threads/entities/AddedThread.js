@@ -1,7 +1,7 @@
 class AddedThread {
   constructor(payload) {
     this._verifyPayload(payload);
-    
+
     const { id, title, owner } = payload;
 
     this.id = id;

@@ -23,7 +23,7 @@ const ServerTestHelper = {
     });
     const { id: userId } = (JSON.parse(responseUser.payload)).data.addedUser;
     const { accessToken } = (JSON.parse(responseAuth.payload)).data;
-    return {accessToken, userId};
+    return { accessToken, userId };
   },
 };
 

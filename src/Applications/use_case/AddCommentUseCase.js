@@ -11,7 +11,7 @@ class AddCommentUseCase {
     const accessToken = await this._authenticationTokenManager.extractToken(useCasePayload.auth);
     await this._authenticationTokenManager.verifyAccessToken(accessToken);
     const addComment = new AddComment(useCasePayload);
-    const {threadId} = addComment;
+    const { threadId } = addComment;
 
     await this._threadRepository.checkAvailabilityThread(threadId);
     const data = await this._commentRepository.addComment(addComment);

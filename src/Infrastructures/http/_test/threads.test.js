@@ -71,26 +71,6 @@ describe('/thread endpoint', () => {
       expect(responseJson.message).toEqual('harus mengirimkan title');
     });
 
-    it('should response 401 when authentictaion is missing', async () => {
-      // Arrange
-      const payload = {
-        title: 'title',
-        body: 'dummy body',
-      };
-      const server = await createServer(container);
-      const { accessToken } = await ServerTestHelper.getAccessToken(server, 'Dicoding');
-      // Action
-      const response = await server.inject({
-        url: '/threads',
-        method: 'POST',
-        payload,
-      });
-      // Assert
-      const responseJson = JSON.parse(response.payload);
-      expect(response.statusCode).toEqual(401);
-      expect(responseJson.message).toEqual('Missing authentication');
-    });
-
     it('should response 400 when title more than 100 character', async () => {
       // Arrange
       const payload = {
@@ -114,6 +94,25 @@ describe('/thread endpoint', () => {
       expect(response.statusCode).toEqual(400);
       expect(responseJson.status).toEqual('fail');
       expect(responseJson.message).toEqual('tidak dapat membuat thread baru karena karakter title melebihi batas limit');
+    });
+
+    it('should response 401 when authentictaion is missing', async () => {
+      // Arrange
+      const payload = {
+        title: 'title',
+        body: 'dummy body',
+      };
+      const server = await createServer(container);
+      // Action
+      const response = await server.inject({
+        url: '/threads',
+        method: 'POST',
+        payload,
+      });
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(401);
+      expect(responseJson.message).toEqual('Missing authentication');
     });
   });
 
@@ -144,6 +143,20 @@ describe('/thread endpoint', () => {
       expect(responseJson.data.thread.comments).toHaveLength(2);
     });
 
+    it('should respond with 404 if thread does not exist', async () => {
+      const server = await createServer(container);
+
+      const response = await server.inject({
+        method: 'GET',
+        url: '/threads/xyz',
+      });
+
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(404);
+      expect(responseJson.status).toEqual('fail');
+      expect(responseJson.message).toBeDefined();
+    });
+
     it('should respond with 200 and with thread details with empty comments', async () => {
       const server = await createServer(container);
 
@@ -163,20 +176,6 @@ describe('/thread endpoint', () => {
       expect(responseJson.data).toBeDefined();
       expect(responseJson.data.thread).toBeDefined();
       expect(responseJson.data.thread.comments).toHaveLength(0);
-    });
-
-    it('should respond with 404 if thread does not exist', async () => {
-      const server = await createServer(container);
-
-      const response = await server.inject({
-        method: 'GET',
-        url: '/threads/xyz',
-      });
-
-      const responseJson = JSON.parse(response.payload);
-      expect(response.statusCode).toEqual(404);
-      expect(responseJson.status).toEqual('fail');
-      expect(responseJson.message).toBeDefined();
     });
   });
 });

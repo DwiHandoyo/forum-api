@@ -26,23 +26,20 @@ describe('GetThreadDetailUseCase', () => {
         username: 'dicoding',
         date: '2021',
         content: 'comment A',
-        isDeleted: false,
+        is_delete: false,
       }),
       new DetailedComment({
         id: 'comment-def',
         username: 'john',
         date: '31-12-2020',
         content: 'comment B',
-        isDeleted: false,
+        is_delete: false,
       }),
     ];
 
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
-
-    const fakeThreadRepository = {
-      getThreadbyId: (threadId) => expectedDetailedThread,
-    };
+    
     mockThreadRepository.getThreadbyId = jest.fn()
       .mockImplementation(() => Promise.resolve(expectedDetailedThread));
 

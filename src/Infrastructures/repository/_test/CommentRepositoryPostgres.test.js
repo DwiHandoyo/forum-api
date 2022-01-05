@@ -1,7 +1,6 @@
 const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
 const ThreadTableTestHelper = require('../../../../tests/ThreadTableTestHelper');
 const CommentsTableTestHelper = require('../../../../tests/CommentTableTestHelper');
-const CommentRepository = require('../../../Domains/comments/CommentRepository');
 const AddComment = require('../../../Domains/comments/entities/AddComment');
 const AddedComment = require('../../../Domains/comments/entities/AddedComment');
 const pool = require('../../database/postgres/pool');
@@ -90,16 +89,72 @@ describe('CommentRepositoryPostgres', () => {
       // assert
       expect(comment.is_delete).toEqual(true);
     });
+  });
 
-    // it('should throw error when comment that wants to be deleted does not exist', async () => {
-    // // arrange
-    //   const addedCommentId = 'comment-xyz';
+  describe('verifyCommentOwner', () => {
+    it('should not throw error if user is comment owner of the comment', async () => {
+      const commentId = 'comment-xyz';
+      await UsersTableTestHelper.addUser({
+        id: 'user-xyz',
+        username: 'dicoding',
+        password: 'secret',
+        fullname: 'Dicoding Indonesia',
+      });
+      await ThreadTableTestHelper.addThread({
+        id: 'thread-xyz', title: 'Dicoding', body: 'Dicoding Indonsia Raya', owner: 'user-xyz', date: '31-12-2021',
+      });
+      await CommentsTableTestHelper.addComment({
+        id: commentId,
+      });
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {}, {}, {});
+      await expect(commentRepositoryPostgres.verifyCommentOwner(commentId, 'user-xyz')).resolves.toBeUndefined();
+    });
 
-    //   const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {}, {});
+    it('should throw error if user is not owner of the comment', async () => {
+      const commentId = 'comment-xyz';
+      await UsersTableTestHelper.addUser({
+        id: 'user-xyz',
+        username: 'dicoding',
+        password: 'secret',
+        fullname: 'Dicoding Indonesia',
+      });
+      await ThreadTableTestHelper.addThread({
+        id: 'thread-xyz', title: 'Dicoding', body: 'Dicoding Indonsia Raya', owner: 'user-xyz', date: '31-12-2021',
+      });
+      await CommentsTableTestHelper.addComment({ id: commentId, threadId: 'thread-xyz', owner: 'user-xyz' });
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {}, {});
+      await expect(commentRepositoryPostgres.verifyCommentOwner(commentId, 'user-abc')).rejects.toThrowError('Anda tidak berhak mengakses resource ini');
+    });
+  });
 
-    //   // action & assert
-    //   await expect(commentRepositoryPostgres.deleteComment(addedCommentId)).rejects.toThrowError('comment tidak ditemukan di database');
-    // });
+  describe('checkAvailabilityComment', () => {
+    it('should resolve if comment exists', async () => {
+      const commentId = 'comment-xyz';
+      await UsersTableTestHelper.addUser({
+        id: 'user-xyz',
+        username: 'dicoding',
+        password: 'secret',
+        fullname: 'Dicoding Indonesia',
+      });
+      await ThreadTableTestHelper.addThread({
+        id: 'thread-xyz', title: 'Dicoding', body: 'Dicoding Indonsia Raya', owner: 'user-xyz', date: '31-12-2021',
+      });
+      await CommentsTableTestHelper.addComment({
+        id: commentId,
+      });
+
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {}, {});
+
+      await expect(commentRepositoryPostgres.checkAvailabilityComment(commentId))
+        .resolves.not.toThrowError();
+    });
+
+    it('should reject if comment does not exist', async () => {
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {}, {});
+      const commentId = 'comment-xyz';
+      await expect(commentRepositoryPostgres.checkAvailabilityComment(commentId))
+        .rejects.toThrowError('comment tidak ditemukan di database');
+    });
   });
 
   describe('getCommentsByThreadId', () => {
@@ -143,95 +198,4 @@ describe('CommentRepositoryPostgres', () => {
       expect(commentDetails).toStrictEqual([]);
     });
   });
-
-  describe('checkAvailabilityComment', () => {
-    it('should resolve if comment exists', async () => {
-      const commentId = 'comment-xyz';
-      await UsersTableTestHelper.addUser({
-        id: 'user-xyz',
-        username: 'dicoding',
-        password: 'secret',
-        fullname: 'Dicoding Indonesia',
-      });
-      await ThreadTableTestHelper.addThread({
-        id: 'thread-xyz', title: 'Dicoding', body: 'Dicoding Indonsia Raya', owner: 'user-xyz', date: '31-12-2021',
-      });
-      await CommentsTableTestHelper.addComment({
-        id: commentId,
-      });
-
-      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {}, {});
-
-      await expect(commentRepositoryPostgres.checkAvailabilityComment(commentId))
-        .resolves.not.toThrowError();
-    });
-
-    it('should reject if comment does not exist', async () => {
-      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {}, {});
-      const commentId = 'comment-xyz';
-      await expect(commentRepositoryPostgres.checkAvailabilityComment(commentId))
-        .rejects.toThrowError('comment tidak ditemukan di database');
-    });
-  });
-
-  describe('verifyCommentOwner', () => {
-    it('should not throw error if user is comment owner of the comment', async () => {
-      const commentId = 'comment-xyz';
-      await UsersTableTestHelper.addUser({
-        id: 'user-xyz',
-        username: 'dicoding',
-        password: 'secret',
-        fullname: 'Dicoding Indonesia',
-      });
-      await ThreadTableTestHelper.addThread({
-        id: 'thread-xyz', title: 'Dicoding', body: 'Dicoding Indonsia Raya', owner: 'user-xyz', date: '31-12-2021',
-      });
-      await CommentsTableTestHelper.addComment({
-        id: commentId,
-      });
-      //   const row = await CommentsTableTestHelper.findCommentById(commentId);
-      //   await console.log(row);
-      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {}, {}, {});
-      await expect(commentRepositoryPostgres.verifyCommentOwner(commentId, 'user-xyz')).resolves.toBeUndefined();
-    });
-
-    it('should throw error if user is not owner of the comment', async () => {
-      const commentId = 'comment-xyz';
-      await UsersTableTestHelper.addUser({
-        id: 'user-xyz',
-        username: 'dicoding',
-        password: 'secret',
-        fullname: 'Dicoding Indonesia',
-      });
-      await ThreadTableTestHelper.addThread({
-        id: 'thread-xyz', title: 'Dicoding', body: 'Dicoding Indonsia Raya', owner: 'user-xyz', date: '31-12-2021',
-      });
-      await CommentsTableTestHelper.addComment({ id: commentId, threadId: 'thread-xyz', owner: 'user-xyz' });
-      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {}, {});
-      await expect(commentRepositoryPostgres.verifyCommentOwner(commentId, 'user-abc')).rejects.toThrowError('Anda tidak berhak mengakses resource ini');
-    });
-  });
-
-  // describe('checkCommentBelongsToThread', () => {
-  //   it('should not throw error if comment exists in thread', async () => {
-  //     await CommentsTableTestHelper.addComment({ id: 'comment-xyz', threadId: 'thread-xyz' });
-  //     const commentRepositoryPostgres = new CommentRepositoryPostgres(
-  //       pool, {}, {},
-  //     );
-  //     await expect(commentRepositoryPostgres.checkCommentBelongsToThread({
-  //       threadId: 'thread-xyz', commentId: 'comment-xyz',
-  //     })).resolves;
-  //   });
-
-  //   it('should throw error if comment is not in thread', async () => {
-  //     await ThreadTableTestHelper.addThread({ id: 'thread-abc' });
-  //     await CommentsTableTestHelper.addComment({ id: 'comment-abc', threadId: 'thread-abc' });
-  //     const commentRepositoryPostgres = new CommentRepositoryPostgres(
-  //       pool, {}, {},
-  //     );
-  //     await expect(commentRepositoryPostgres.checkCommentBelongsToThread({
-  //       threadId: 'thread-xyz', commentId: 'comment-abc',
-  //     })).rejects.toThrowError('comment yang anda cari tidak ada di thread ini');
-  //   });
-  // });
 });

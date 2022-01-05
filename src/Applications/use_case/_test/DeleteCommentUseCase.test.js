@@ -18,7 +18,7 @@ describe('DeleteCommentUseCase', () => {
       commentRepository: mockCommentRepository,
     });
 
-    // Act
+    // Action
     await deleteCommentUseCase.execute(useCasePayload);
 
     // Assert

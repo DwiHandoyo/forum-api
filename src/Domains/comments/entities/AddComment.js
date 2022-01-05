@@ -19,11 +19,6 @@ class AddComment {
     if (content.length > 250) {
       throw new Error('ADD_COMMENT.CONTENT_LIMIT_CHAR');
     }
-
-    // if (!content.match(/(\s+([a-zA-Z]+\s+)+)/)) {
-    //   console.log('instance2');
-    //   throw new Error('ADD_COMMENT.TITLE_CONTAIN_RESTRICTED_CHARACTER');
-    // }
   }
 }
 

@@ -2,7 +2,7 @@ const DetailedComment = require('../../../Domains/comments/entities/DetailedComm
 
 class CommentsMapDb {
   filterDeletedComments(comment) {
-    if (comment.isDelete) {
+    if (comment.is_delete) {
       const { id, username, date } = comment;
       return new DetailedComment({
         id, username, date, content: '**komentar telah dihapus**',

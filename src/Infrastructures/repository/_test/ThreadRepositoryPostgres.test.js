@@ -57,6 +57,33 @@ describe('ThreadRepositoryPostgres', () => {
     });
   });
 
+  describe('checkAvailabilityThread function', () => {
+    it('should return NotFoundError when thread is not found', async () => {
+      // arrange
+      const threadId = 'thread-xyz';
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {}, {});
+      await UsersTableTestHelper.addUser({ id: 'user-xyz' });
+      await ThreadTableTestHelper.addThread({ id: threadId, owner: 'user-xyz' });
+
+      // action & assert
+      await expect(threadRepositoryPostgres.checkAvailabilityThread('thread-xy'))
+        .rejects
+        .toThrowError(NotFoundError);
+      await expect(threadRepositoryPostgres.checkAvailabilityThread('thread-xy'))
+        .rejects.toThrowError('thread tidak ditemukan di database');
+    });
+    it('should not return error when thread is not found', async () => {
+      // arrange
+      const threadId = 'thread-xyz';
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {}, {});
+      await UsersTableTestHelper.addUser({ id: 'user-xyz' });
+      await ThreadTableTestHelper.addThread({ id: threadId, owner: 'user-xyz' });
+
+      // action & assert
+      await expect(threadRepositoryPostgres.checkAvailabilityThread(threadId)).resolves.not.toThrowError();
+    });
+  });
+
   describe('getThreadById function', () => {
     it('should return thread when thread is found', async () => {
       // arrange
@@ -81,20 +108,6 @@ describe('ThreadRepositoryPostgres', () => {
 
       // assert
       expect(foundThread).toStrictEqual(expectedThread);
-    });
-  });
-
-  describe('checkAvailabilityThread function', () => {
-    it('should return NotFoundError when thread is not found', async () => {
-      // arrange
-      const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {}, {});
-      await UsersTableTestHelper.addUser({ id: 'user-xyz' });
-      await ThreadTableTestHelper.addThread({ id: 'thread-xyz', owner: 'user-xyz' });
-
-      // action & assert
-      await expect(threadRepositoryPostgres.checkAvailabilityThread('thread-xy'))
-        .rejects
-        .toThrowError(NotFoundError);
     });
   });
 });

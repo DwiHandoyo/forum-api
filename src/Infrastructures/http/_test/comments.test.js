@@ -20,7 +20,6 @@ describe('comment endpoint', () => {
   describe('when POST /threads/{threadId}/comments', () => {
     it('should response 201 and persisted thread', async () => {
       // arrange
-      /* add comment payload */
       const requestPayload = {
         content: 'sebuah komen',
       };
@@ -55,10 +54,12 @@ describe('comment endpoint', () => {
       expect(responseJson.data.addedComment.owner).toBeDefined();
     });
 
-    it('should respond with 400 when comment payload has missing specificiations', async () => {
+    it('should respond with 400 when comment payload has wrong data type specifications', async () => {
       // arrange
       /* add comment payload with bad specifications */
-      const requestPayload = {};
+      const requestPayload = {
+        content: 1234,
+      };
 
       const server = await createServer(container);
 
@@ -86,13 +87,10 @@ describe('comment endpoint', () => {
       expect(responseJson.message).toBeDefined();
     });
 
-    it('should respond with 400 when comment payload has wrong data type specifications', async () => {
+    it('should respond with 400 when comment payload has missing specificiations', async () => {
       // arrange
       /* add comment payload with bad specifications */
-      const requestPayload = {
-        content: 1234,
-      };
-
+      const requestPayload = {};
       const server = await createServer(container);
 
       /* login and add thread to get accessToken and threadId */
@@ -149,38 +147,6 @@ describe('comment endpoint', () => {
       expect(responseJson.status).toEqual('success');
     });
 
-    it('should respond with 403 when someone tries to delete comment that they dont own', async () => {
-    // arrange
-      const server = await createServer(container);
-
-      /* create first user and their comment */
-      const { userId: userId1 } = await ServerTestHelper
-        .getAccessToken(server, 'dicoding');
-      const threadId1 = 'thread-xyz';
-      const commentId1 = 'comment-xyz';
-      await ThreadTableTestHelper.addThread({ id: threadId1, owner: userId1 });
-      await CommentsTableTestHelper.addComment({ id: commentId1, owner: userId1 });
-
-      /* create second user */
-      const { accessToken: accessToken2, userId: userId2 } = await ServerTestHelper
-        .getAccessToken(server, 'dicoding2');
-
-      // action
-      const response = await server.inject({
-        method: 'DELETE',
-        url: `/threads/${threadId1}/comments/${commentId1}`,
-        headers: {
-          Authorization: `Bearer ${accessToken2}`,
-        },
-      });
-
-      // assert
-      const responseJson = JSON.parse(response.payload);
-      expect(response.statusCode).toEqual(403);
-      expect(responseJson.status).toEqual('fail');
-      expect(responseJson.message).toBeDefined();
-    });
-
     it('should respond with 200 with thread details and comments after comment deletion', async () => {
       const server = await createServer(container);
 
@@ -217,6 +183,38 @@ describe('comment endpoint', () => {
       expect(responseJson.data.thread).toBeDefined();
       expect(responseJson.data.thread.comments).toHaveLength(2);
       expect(responseJson.data.thread.comments[0].content).toEqual('**komentar telah dihapus**');
+    });
+
+    it('should respond with 403 when owner is unauthorized', async () => {
+    // arrange
+      const server = await createServer(container);
+
+      /* create first user and their comment */
+      const { userId: userId1 } = await ServerTestHelper
+        .getAccessToken(server, 'dicoding');
+      const threadId1 = 'thread-xyz';
+      const commentId1 = 'comment-xyz';
+      await ThreadTableTestHelper.addThread({ id: threadId1, owner: userId1 });
+      await CommentsTableTestHelper.addComment({ id: commentId1, owner: userId1 });
+
+      /* create second user */
+      const { accessToken: accessToken2, userId: userId2 } = await ServerTestHelper
+        .getAccessToken(server, 'dicoding2');
+
+      // action
+      const response = await server.inject({
+        method: 'DELETE',
+        url: `/threads/${threadId1}/comments/${commentId1}`,
+        headers: {
+          Authorization: `Bearer ${accessToken2}`,
+        },
+      });
+
+      // assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(403);
+      expect(responseJson.status).toEqual('fail');
+      expect(responseJson.message).toBeDefined();
     });
   });
 });

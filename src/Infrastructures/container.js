@@ -9,7 +9,6 @@ const Jwt = require('@hapi/jwt');
 const pool = require('./database/postgres/pool');
 
 const date = new Date();
-const commentsMapDb = require('./utils/comments');
 
 // service (repository, helper, manager, etc)
 const ThreadRepository = require('../Domains/threads/ThreadRepository');
@@ -70,9 +69,6 @@ container.register([
         },
         {
           concrete: date,
-        },
-        {
-          concrete: commentsMapDb,
         },
       ],
     },

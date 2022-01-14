@@ -1,4 +1,5 @@
 const DetailedThread = require('../../Domains/threads/entities/DetailedThread');
+const DetailedComment = require('../../Domains/comments/entities/DetailedComment');
 
 class GetThreadDetailsUseCase {
   constructor({ commentRepository, threadRepository }) {
@@ -10,7 +11,12 @@ class GetThreadDetailsUseCase {
     const { threadId } = useCasePayload;
     const comments = await this._commentRepository.getCommentsByThreadId(threadId);
     const data = await this._threadRepository.getThreadbyId(threadId);
-    return new DetailedThread({ ...data, comments });
+    data.comments = comments.map(this._filterDeletedComments);
+    return new DetailedThread(data);
+  }
+
+  _filterDeletedComments(comment) {
+    return new DetailedComment(comment);
   }
 }
 

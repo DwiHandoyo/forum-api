@@ -1,6 +1,5 @@
 const NotFoundError = require('../../Commons/exceptions/NotFoundError');
 const AuthorizationError = require('../../Commons/exceptions/AuthorizationError');
-const AddedComment = require('../../Domains/comments/entities/AddedComment');
 const CommentRepository = require('../../Domains/comments/CommentRepository');
 
 class CommentRepositoryPostgres extends CommentRepository {
@@ -20,8 +19,8 @@ class CommentRepositoryPostgres extends CommentRepository {
       text: 'INSERT INTO comments VALUES($1, $2, $3, $4, $5) RETURNING id, content, owner',
       values: [id, content, date, threadId, owner],
     };
-    const result = await this._pool.query(query);
-    return new AddedComment({ ...result.rows[0] });
+    const {rows} = await this._pool.query(query);
+    return rows[0];
   }
 
   async checkAvailabilityComment(id) {
@@ -53,9 +52,8 @@ class CommentRepositoryPostgres extends CommentRepository {
       ORDER BY date ASC `,
       values: [threadId],
     };
-    let result = await this._pool.query(query);
-    result = result.rows.map(this._mapDb.filterDeletedComments);
-    return result;
+    const { rows } = await this._pool.query(query);
+    return rows;
   }
 
   async verifyCommentOwner(id, owner) {

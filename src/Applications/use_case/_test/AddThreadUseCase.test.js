@@ -17,6 +17,12 @@ describe('AddThreadUseCase', () => {
       auth: 'Bearer xyz',
     };
     const accessToken = 'xyz';
+
+    const addedThread = {
+      id: 'thread-123',
+      owner: useCasePayload.owner,
+      title: useCasePayload.title,
+    };
     const expectedAddedThread = new AddedThread({
       id: 'thread-123',
       owner: useCasePayload.owner,
@@ -25,27 +31,21 @@ describe('AddThreadUseCase', () => {
 
     /** creating dependency of use case */
     const mockThreadRepository = new ThreadRepository();
-    const mockAuthenticationTokenManager = new AuthenticationTokenManager();
 
     /** mocking needed function */
     mockThreadRepository.addThread = jest.fn()
-      .mockImplementation(() => Promise.resolve(expectedAddedThread));
-    mockAuthenticationTokenManager.extractToken = jest.fn()
-      .mockImplementation(() => Promise.resolve(accessToken));
-    mockAuthenticationTokenManager.verifyAccessToken = jest.fn()
-      .mockImplementation(() => Promise.resolve());
+      .mockImplementation(() => Promise.resolve(addedThread));
 
     /** creating use case instance */
     const getThreadUseCase = new AddThreadUseCase({
       threadRepository: mockThreadRepository,
-      authenticationTokenManager: mockAuthenticationTokenManager,
     });
 
     // Action
-    const addedThread = await getThreadUseCase.execute(useCasePayload);
+    const useCaseResult = await getThreadUseCase.execute(useCasePayload);
 
     // Assert
-    expect(addedThread).toStrictEqual(expectedAddedThread);
+    expect(useCaseResult).toStrictEqual(expectedAddedThread);
     expect(mockThreadRepository.addThread).toBeCalledWith(new AddThread({
       owner: useCasePayload.owner,
       body: useCasePayload.body,

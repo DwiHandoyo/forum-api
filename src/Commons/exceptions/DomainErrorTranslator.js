@@ -24,6 +24,8 @@ DomainErrorTranslator._directories = {
   'ADD_COMMENT.NOT_CONTAIN_CONTENT': new InvariantError('harus mengirimkan content'),
   'ADD_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('content harus string'),
   'ADD_COMMENT.CONTENT_LIMIT_CHAR': new InvariantError('tidak dapat membuat comment baru karena karakter body melebihi batas limit'),
+  'DELETE_COMMENT_USE_CASE.NOT_CONTAIN_COMMENT_ID': new InvariantError('tidak ada comment id'),
+  'DELETE_COMMENT_USE_CASE.PAYLOAD_NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('comment id tidak valid'),
 
 };
 

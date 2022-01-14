@@ -1,7 +1,6 @@
 const ThreadTableTestHelper = require('../../../../tests/ThreadTableTestHelper');
 const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
 const AddThread = require('../../../Domains/threads/entities/AddThread');
-const AddedThread = require('../../../Domains/threads/entities/AddedThread');
 const pool = require('../../database/postgres/pool');
 const ThreadRepositoryPostgres = require('../ThreadRepositoryPostgres');
 const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
@@ -48,11 +47,11 @@ describe('ThreadRepositoryPostgres', () => {
 
       // assert
       const threads = await ThreadTableTestHelper.findThreadById(addedThread.id);
-      expect(addedThread).toStrictEqual(new AddedThread({
+      expect(addedThread).toStrictEqual({
         id: `thread-${fakeIdGenerator()}`,
         title: 'Dicoding Indonesia',
         owner: 'user-xyz',
-      }));
+      });
       expect(threads).toBeDefined();
     });
   });
@@ -67,10 +66,7 @@ describe('ThreadRepositoryPostgres', () => {
 
       // action & assert
       await expect(threadRepositoryPostgres.checkAvailabilityThread('thread-xy'))
-        .rejects
-        .toThrowError(NotFoundError);
-      await expect(threadRepositoryPostgres.checkAvailabilityThread('thread-xy'))
-        .rejects.toThrowError('thread tidak ditemukan di database');
+        .rejects.toThrowError(new NotFoundError('thread tidak ditemukan di database'));
     });
     it('should not return error when thread is not found', async () => {
       // arrange

@@ -20,7 +20,7 @@ class DetailedThread {
       throw new Error('DETAILED_THREAD.NOT_CONTAIN_NEEDED_PROPERTY');
     }
 
-    if (typeof id !== 'string' || typeof title !== 'string' || typeof body !== 'string' || typeof username !== 'string' || typeof date !== 'string' || !(Array.isArray(comments))) {
+    if (typeof id !== 'string' || typeof title !== 'string' || typeof body !== 'string' || typeof username !== 'string' || !(Array.isArray(comments))) {
       throw new Error('DETAILED_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION');
     }
   }

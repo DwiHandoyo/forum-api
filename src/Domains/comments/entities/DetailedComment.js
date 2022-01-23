@@ -1,7 +1,7 @@
 class DetailedComment {
   constructor(payload) {
     this._verifyPayload(payload);
-    
+
     const {
       id,
       content,
@@ -23,7 +23,7 @@ class DetailedComment {
       throw new Error('DETAILED_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY');
     }
 
-    if (typeof id !== 'string' || typeof content !== 'string' || typeof username !== 'string' || typeof date !== 'string') {
+    if (typeof id !== 'string' || typeof content !== 'string' || typeof username !== 'string') {
       throw new Error('DETAILED_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION');
     }
   }
